@@ -1,20 +1,38 @@
 #!/bin/bash
+# Copyright (c) 2019 Daniel Molkentin <daniel@molkentin.de>
+# Provided under the BSD License. See LICENSE for details.
 
-#set -x
+# shellcheck disable=SC1090
+# shellcheck disable=SC1091
+
+homelocationconf="$HOME/.local/mkpodteaser.conf"
+
+# Initialize config variables
 #ffmpeg_verb="info"
-
-homelocationconf=$HOME/.local/mkpodteaser.conf
+ffmpeg="ffmpeg"
+fontfamily=
+fontfile=
+boxcolor=
+boxheight=
+quotefontsize=
+quotecolor=
+wavecolor=
+episodefontsize=
+episodetextcolor=
+episodetextx=
+episodetexty=
+background=
 
 # Source files in .local and local directory, prefer local settings
-[ -r "$homelocationconf" ] && source $homelocationconf
-[ -r "mkpodteaser.conf" ] && source mkpodteaser.conf
+[ -r "$homelocationconf" ] && source "$homelocationconf"
+[ -r "mkpodteaser.conf" ] && source "mkpodteaser.conf"
 
 if [ $# -lt 3 ]; then
-  echo Usage: $0 [audio.mp3] [quotes.txt] \"[episodename]\" [teaser.mp4]
+  echo "Usage: $0 [audio.mp3] [quotes.txt] \"[episodename]\" [teaser.mp4]"
   exit
 fi
 
-if [ -z "$(command -v ffmpeg)" ]; then
+if [ -z "$(command -v "$ffmpeg")" ]; then
   echo "ffmpeg not found. Please install ffmpeg or set the ffmpeg variable"
   exit
 fi
@@ -38,13 +56,13 @@ texts=""
 [ -n "$fontfamily" ] && font="font=$fontfamily" || font="fontfile=$fontfile"
 
 
-while read start end text; do
+while read -r start end text; do
   add_quote "$start" "$end" "$text"
-done < $textfile
+done < "$textfile"
 
-$ffmpeg -v ${ffmpeg_verb:-quiet} -y \
-  -i $audio \
-  -i $background \
+$ffmpeg -v "${ffmpeg_verb:-quiet}" -y \
+  -i "$audio" \
+  -i "$background" \
   -filter_complex "
   [1]        drawtext=$font:fontsize=$episodefontsize:fontcolor=$episodetextcolor:x=$episodetextx:y=$episodetexty:text='$episodename'[bg];
   [0:a]      showwaves=s=1920x720:colors=$wavecolor:mode=cline[wf];
@@ -52,4 +70,4 @@ $ffmpeg -v ${ffmpeg_verb:-quiet} -y \
              drawbox=y=ih-h:color=$boxcolor:width=iw:height=$boxheight:t=fill
              $texts [v]
   " \
-  -map "[v]" -map 0:a -c:v libx264 -c:a aac -shortest -ac 1 -pix_fmt yuv420p -r 25 -g 50 -crf 20 $outfile 
+  -map "[v]" -map 0:a -c:v libx264 -c:a aac -shortest -ac 1 -pix_fmt yuv420p -r 25 -g 50 -crf 20 "$outfile" 
