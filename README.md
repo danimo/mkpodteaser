@@ -1,4 +1,4 @@
-# mkpodteaser: Create a visual teaser for your podcast
+# mkpodteaser: Create visual teasers for your podcast
 
 Promoting your podcast in social media either requires on either an expensive
 and laborsome audio/audio tools or makes you dependend on propritary, paid-for
