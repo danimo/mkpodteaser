@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# mkpodteaser v0.1
+#
 # Copyright (c) 2019 Daniel Molkentin <daniel@molkentin.de>
 # Provided under the BSD License. See LICENSE for details.
 
