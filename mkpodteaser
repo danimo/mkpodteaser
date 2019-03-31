@@ -1,0 +1,55 @@
+#!/bin/bash
+
+#set -x
+#ffmpeg_verb="info"
+
+homelocationconf=$HOME/.local/mkpodteaser.conf
+
+# Source files in .local and local directory, prefer local settings
+[ -r "$homelocationconf" ] && source $homelocationconf
+[ -r "mkpodteaser.conf" ] && source mkpodteaser.conf
+
+if [ $# -lt 3 ]; then
+  echo Usage: $0 [audio.mp3] [quotes.txt] \"[episodename]\" [teaser.mp4]
+  exit
+fi
+
+if [ -z "$(command -v ffmpeg)" ]; then
+  echo "ffmpeg not found. Please install ffmpeg or set the ffmpeg variable"
+  exit
+fi
+
+escape_ffmpeg_text() {
+  tmp="${1//:/\\:}"
+  tmp="${tmp//\'/\\\'}"
+  echo "$tmp"
+}
+
+add_quote() {
+  texts="$texts,drawtext=enable='between(t,$1,$2)':$font:fontsize=$quotefontsize:fontcolor=$quotecolor:x=(w-tw)/2:y=h-$boxheight+(($boxheight/2)-(th/2)):text='$(escape_ffmpeg_text "$3")'"
+}
+
+audio=$1
+textfile=$2
+episodename="$(escape_ffmpeg_text "$3")"
+outfile=$4
+
+texts=""
+[ -n "$fontfamily" ] && font="font=$fontfamily" || font="fontfile=$fontfile"
+
+
+while read start end text; do
+  add_quote "$start" "$end" "$text"
+done < $textfile
+
+$ffmpeg -v ${ffmpeg_verb:-quiet} -y \
+  -i $audio \
+  -i $background \
+  -filter_complex "
+  [1]        drawtext=$font:fontsize=$episodefontsize:fontcolor=$episodetextcolor:x=$episodetextx:y=$episodetexty:text='$episodename'[bg];
+  [0:a]      showwaves=s=1920x720:colors=$wavecolor:mode=cline[wf];
+  [bg][wf]   overlay=y=350:format=yuv444,
+             drawbox=y=ih-h:color=$boxcolor:width=iw:height=$boxheight:t=fill
+             $texts [v]
+  " \
+  -map "[v]" -map 0:a -c:v libx264 -c:a aac -shortest -ac 1 -pix_fmt yuv420p -r 25 -g 50 -crf 20 $outfile 
