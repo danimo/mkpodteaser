@@ -1,13 +1,13 @@
 # mkpodteaser: Create visual teasers for your podcast
 
 Promoting your podcast in social media either requires on either an expensive
-and laborsome audio/audio tools or makes you dependend on propritary, paid-for
+and laborsome audio/audio tools or makes you dependent on propritary, paid-for
 online services.
 
-`mkpodteaser` offers a relatively simplistic way to create
-your own powerful episode teasers. You provide a few static assets and an audio
-file, and `mkpodteaser` will add a waveform and render the result into an mp4
-file that you can upload to your favorite social media site.
+`mkpodteaser` in contrast offers a relatively simplistic way to create your own
+powerful episode teasers. You provide a few static assets and an audio file,
+and `mkpodteaser` will add a waveform and render the result into an mp4 file
+that you can upload to your favorite social media site.
 
 ## Preparation
 
