@@ -73,4 +73,4 @@ $ffmpeg -v "${ffmpeg_verb:-quiet}" -y \
              drawbox=y=ih-h:color=$boxcolor:width=iw:height=$boxheight:t=fill
              $texts [v]
   " \
-  -map "[v]" -map 0:a -c:v libx264 -c:a aac -shortest -ac 1 -pix_fmt yuv420p -r 25 -g 50 -crf 20 "$outfile" 
+  -map "[v]" -map 0:a -c:v libx264 -c:a aac -shortest -ac 1 -pix_fmt yuv420p -r 25 -g 50 -crf 28 "$outfile"
